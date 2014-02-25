@@ -1,0 +1,483 @@
+#+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
+#+TAGS:           write(w) update(u) fix(f) verify(v) noexport(n)
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+TITLE:          thi.ng/macromath
+#+AUTHOR:         Karsten Schmidt
+#+EMAIL:          k@thi.ng
+#+LANGUAGE:       en
+#+OPTIONS:        toc:3 h:4 html-postamble:auto html-preamble:t tex:t
+#+HTML_CONTAINER: div
+#+HTML_DOCTYPE:   <!DOCTYPE html5>
+#+HTML_HEAD:      <link href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+#+HTML_HEAD:      <link href="css/main.css" rel="stylesheet" type="text/css" />
+
+* About the project
+** Injected properties                                             :noexport:
+#+BEGIN_SRC clojure :exports none :noweb-ref version
+0.1.0
+#+END_SRC
+#+BEGIN_SRC clojure :exports none :noweb-ref project-url
+https://github.com/thi-ng/macromath
+#+END_SRC
+#+BEGIN_SRC clojure :exports none :noweb-ref gen-source-path
+target/classes
+#+END_SRC
+#+BEGIN_SRC clojure :exports none :noweb-ref gen-test-path
+target/test-classes
+#+END_SRC
+#+BEGIN_SRC clojure :exports none :noweb yes :noweb-ref cljs-artefact-path
+target/macromath-<<version>>.js
+#+END_SRC
+
+** Description
+
+A small library providing basic math expressions as macros to produce
+inline expanded, nested expressions to create more legible source code
+for involved maths and to avoid extraneous =reduce= calls caused by
+the higher arity versions of Clojure's built-in maths functions.
+
+The macros are useful to simplify code for many geometry & matrix
+operations and are defined for both Clojure & ClojureScript. However,
+the latter makes currently use of CLJS =js*= compiler forms. It's
+something needing to be refactored (pull requests welcome!), but to my
+knowledge it seems currently the only way to make it work since the
+basic maths fns in CLJS are implemented as macros themselves and
+therefore can't be passed as value as in Clojure. See also [[https://groups.google.com/forum/m/#!topic/clojure/AZakJyLiB3A][email discussion]].
+
+** License
+
+This project is open source and licensed under the [[http://www.apache.org/licenses/LICENSE-2.0][Apache Software License 2.0]].
+
+** Dependencies
+*** Runtime
+**** [[https://github.com/clojure/clojure][Clojure]]
+#+BEGIN_SRC clojure :noweb-ref dep-clj
+[org.clojure/clojure "1.6.0-beta1"]
+#+END_SRC
+**** [[https://github.com/clojure/clojurescript][ClojureScript]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljs
+[org.clojure/clojurescript "0.0-2173"]
+#+END_SRC
+*** Development
+**** [[https://github.com/cemerick/austin][Austin]]
+#+BEGIN_SRC clojure :noweb-ref dep-austin
+[com.cemerick/austin "0.1.4"]
+#+END_SRC
+**** [[https://github.com/lynaghk/cljx][Cljx]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljx
+[com.keminglabs/cljx "0.3.2"]
+#+END_SRC
+**** [[https://github.com/hugoduncan/criterium][Criterium]]
+#+BEGIN_SRC clojure :noweb-ref dep-criterium
+[criterium "0.4.1"]
+#+END_SRC
+**** [[https://github.com/cemerick/clojurescript.test][clojurescript.test]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljs-test
+[com.cemerick/clojurescript.test "0.2.2"]
+#+END_SRC
+**** [[https://github.com/emezeske/lein-cljsbuild][Cljsbuild]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljsbuild
+[lein-cljsbuild "1.0.2"]
+#+END_SRC
+
+** Contributors
+
+   | *Name*          | *Role*                          | *Website*                  |
+   |-----------------+---------------------------------+----------------------------|
+   | Karsten Schmidt | initiator & principal developer | http://postspectacular.com |
+
+** Release history
+
+   | *Version* | *Released* | *Description*   | *Tagged Github URL* |
+   |-----------+------------+-----------------+---------------------|
+   |     0.1.0 | 2014-02-25 | Initial release |                     |
+
+** Leiningen coordinates
+#+BEGIN_SRC clojure :noweb yes :noweb-ref lein-coords
+  [thi.ng/macromath <<version>>]
+#+END_SRC
+
+** Building this project
+
+This project is written in a literate programming format and requires
+[[https://www.gnu.org/software/emacs/][Emacs]] & [[http://orgmode.org][Org-mode]] to generate usable source code in CLJX form. Assuming
+both tools are installed, the easiest way to generate a working
+project is via command line (make sure =emacs= is on your path or else
+edit its hpath in =tangle.sh=):
+
+#+BEGIN_SRC bash
+  cd macromath # project root
+  ./tangle *.org test/*.org
+#+END_SRC
+
+Once tangling is complete, you can =cd= into the generated project
+directory and then use =lein= as usual. The =project.clj= file defines
+an alias to trigger a complete build & tests for both CLJ & CLJS
+versions.
+
+#+BEGIN_SRC bash
+  cd babel # generated project root
+  lein cleantest
+#+END_SRC
+
+** Leiningen project file                                          :noexport:
+#+BEGIN_SRC clojure :tangle babel/project.clj :noweb yes :mkdirp yes :padline no
+  (defproject thi.ng/macromath "<<version>>"
+    :description "Collection of common math macros to produce inline expanded, nested expressions."
+    :url "<<project-url>>"
+    :license {:name "Apache Software License 2.0"
+              :url "https://www.apache.org/licenses/LICENSE-2.0"}
+  
+    :dependencies [<<dep-clj>>]
+  
+    :source-paths ["src/cljx"]
+    :test-paths ["<<gen-test-path>>"]
+  
+    :profiles {:dev {:dependencies [<<dep-cljs>>
+                                    <<dep-criterium>>]
+                     :plugins [<<dep-cljx>>
+                               <<dep-cljsbuild>>
+                               <<dep-cljs-test>>
+                               <<dep-austin>>]
+                     :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]}}}
+  
+    :cljx {:builds [{:source-paths ["src/cljx"]
+                     :output-path "<<gen-source-path>>"
+                     :rules :clj}
+                    {:source-paths ["src/cljx"]
+                     :output-path "<<gen-source-path>>"
+                     :rules :cljs}
+                    {:source-paths ["test/cljx"]
+                     :output-path "<<gen-test-path>>"
+                     :rules :clj}
+                    {:source-paths ["test/cljx"]
+                     :output-path "<<gen-test-path>>"
+                     :rules :cljs}]}
+  
+    :cljsbuild {:builds [{:source-paths ["<<gen-source-path>>" "<<gen-test-path>>"]
+                          :id "simple"
+                          :compiler {:output-to "<<cljs-artefact-path>>"
+                                     :optimizations :whitespace
+                                     :pretty-print true}}]
+                :test-commands {"unit-tests" ["phantomjs" :runner "<<cljs-artefact-path>>"]}}
+  
+    :scm {:url "git@github.com:thi-ng/macromath.git"}
+    :pom-addition [:developers [:developer
+                                [:name "Karsten Schmidt"]
+                                [:url "http://thi.ng"]
+                                [:timezone "0"]]])
+#+END_SRC
+
+** Accessing library version during runtime
+
+The autogenerated namespace =thi.ng.macromath.version= contains a
+single symbol =version= holding the version string defined above:
+
+#+BEGIN_SRC clojure :noweb yes
+  (use 'thi.ng.macromath.version)
+  
+  (prn version)
+  ; "<<version>>"
+#+END_SRC
+
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/version.cljx :noweb yes :mkdirp yes :padline no :exports none
+  (ns thi.ng.macromath.version)
+  (def ^:const version "<<version>>")
+#+END_SRC
+
+* Modules
+** thi.ng.macromath.core
+
+This library only contains this single name space. Though, as stated
+earlier, due to a CLJS compiler issue, the CLJS version provides the
+same functionality in a renamed ns: =thi.ng.macromath.core-cljs=. This
+is necessary so that user libraries can refer to the special CLJS ns
+when importing macros via CLJX.
+
+#+BEGIN_SRC clojure
+  (ns user
+    #+clj (:require [thi.ng.macomath.core :as m])
+    #+cljs (:require [thi.ng.macomath.core-cljs :as m]))
+#+END_SRC
+
+The following maths functions are currently implemented and are
+especially useful (more legible and faster) for higher arities (up to 8):
+
+  | *fn*      | *description*                                              | *min arity* | *max arity* |
+  |-----------+------------------------------------------------------------+-------------+-------------|
+  | =add=     | like clj =+=                                               |      2      |      8      |
+  | =sub=     | like clj =-=                                               |      2      |      8      |
+  | =mul=     | like clj =*=                                               |      2      |      8      |
+  | =div=     | like clj =/=                                               |      2      |      8      |
+  | =madd=    | add pairwise multiplies                                    |      3      |      8      |
+  | =msub=    | subtract pairwise multiplies                               |      3      |      8      |
+  | =addm=    | product of pairwise sums                                   |      3      |      8      |
+  | =subm=    | product of pairwise subtracts                              |      3      |      8      |
+  | =maddsub= | like =madd=, but last arg or pair is subtracted as product |      5      |      8      |
+  | =msubadd= | like =msub=, but last arg or pair is added as product      |      5      |      8      |
+
+*** Base expression macros (Clojure)
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core.clj :mkdirp yes :padline no
+  (ns thi.ng.macromath.core)
+  
+  (defmacro defmathop
+    "Constructs macro to build inlined nested expressions with f applied
+    successively. Supports arities 2-8."
+    [name f]
+    `(defmacro ~name
+       ([a# b#]
+          `(~~f ~a# ~b#))
+       ([a# b# c#]
+          `(~~f (~~f ~a# ~b#) ~c#))
+       ([a# b# c# d#]
+          `(~~f (~~f (~~f ~a# ~b#) ~c#) ~d#))
+       ([a# b# c# d# e#]
+          `(~~f (~~f (~~f (~~f ~a# ~b#) ~c#) ~d#) ~e#))
+       ([a# b# c# d# e# f#]
+          `(~~f (~~f (~~f (~~f (~~f ~a# ~b#) ~c#) ~d#) ~e#) ~f#))
+       ([a# b# c# d# e# f# g#]
+          `(~~f (~~f (~~f (~~f (~~f (~~f ~a# ~b#) ~c#) ~d#) ~e#) ~f#) ~g#))
+       ([a# b# c# d# e# f# g# h#]
+          `(~~f (~~f (~~f (~~f (~~f (~~f (~~f ~a# ~b#) ~c#) ~d#) ~e#) ~f#) ~g#) ~h#))))
+  
+  (defmacro defmathop2
+    "Constructs macro to build inlined nested expressions with f applied
+    to inner pairs and f2 to combine results."
+    [name f f2]
+    `(defmacro ~name
+       ([a# b# c#]
+          `(~~f2 (~~f ~a# ~b#) ~c#))
+       ([a# b# c# d#]
+          `(~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)))
+       ([a# b# c# d# e#]
+          `(~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) ~e#))
+       ([a# b# c# d# e# f#]
+          `(~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)))
+       ([a# b# c# d# e# f# g#]
+          `(~~f2 (~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)) ~g#))
+       ([a# b# c# d# e# f# g# h#]
+          `(~~f2 (~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)) (~~f ~g# ~h#)))))
+  
+  (defmathop add +)
+  (defmathop sub -)
+  (defmathop mul *)
+  (defmathop div /)
+  (defmathop2 madd * +)
+  (defmathop2 msub * -)
+  (defmathop2 addm + *)
+  (defmathop2 subm - *)
+#+END_SRC
+
+*** Base expression macros (ClojureScript)
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core_cljs.clj :mkdirp yes :padline no
+  (ns thi.ng.macromath.core-cljs)
+  
+  (defmacro defmathop
+    "Constructs macro to build inlined nested expressions with f applied
+    successively. Supports arities 2-8."
+    [name f]
+    `(defmacro ~name
+       ([a# b#]
+          (list '~'js* (str "(~{} " ~f " ~{})")
+                a# b#))
+       ([a# b# c#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{})")
+                a# b# c#))
+       ([a# b# c# d#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{} " ~f " ~{})")
+                a# b# c# d#))
+       ([a# b# c# d# e#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{} " ~f " ~{} " ~f " ~{})")
+                a# b# c# d# e#))
+       ([a# b# c# d# e# f#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{} " ~f " ~{} "
+                            ~f " ~{} " ~f " ~{})")
+                a# b# c# d# e# f#))
+       ([a# b# c# d# e# f# g#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{} " ~f " ~{} "
+                            ~f " ~{} " ~f " ~{} " ~f " ~{})")
+                a# b# c# d# e# f# g#))
+       ([a# b# c# d# e# f# g# h#]
+          (list '~'js* (str "(~{} " ~f " ~{} " ~f " ~{} " ~f " ~{} "
+                            ~f " ~{} " ~f " ~{} " ~f " ~{} " ~f " ~{})")
+                a# b# c# d# e# f# g# h#))))
+  
+  (defmacro defmathop2
+    "Constructs macro to build inlined nested expressions with f applied
+    to inner pairs and f2 to combine results. Supports arities 3-8."
+    [name f f2]
+    `(defmacro ~name
+       ([a# b# c#]
+          (list '~'js* (str "((~{} " ~f " ~{}) "
+                            ~f2 " ~{})")
+                a# b# c#))
+       ([a# b# c# d#]
+          (list '~'js* (str "((~{} " ~f " ~{}) "
+                            ~f2 " (~{} " ~f " ~{}))")
+                a# b# c# d#))
+       ([a# b# c# d# e#]
+          (list '~'js* (str "(((~{} " ~f " ~{}) "
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " ~{})")
+                a# b# c# d# e#))
+       ([a# b# c# d# e# f#]
+          (list '~'js* (str "(((~{} " ~f " ~{}) "
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " (~{} " ~f " ~{}))")
+                a# b# c# d# e# f#))
+       ([a# b# c# d# e# f# g#]
+          (list '~'js* (str "((((~{} " ~f " ~{}) "
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " ~{})")
+                a# b# c# d# e# f# g#))
+       ([a# b# c# d# e# f# g# h#]
+          (list '~'js* (str "((((~{} " ~f " ~{}) "
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " (~{} " ~f " ~{}))"
+                            ~f2 " (~{} " ~f " ~{}))")
+                a# b# c# d# e# f# g# h#))))
+  
+  (defmathop add "+")
+  (defmathop sub "-")
+  (defmathop mul "*")
+  (defmathop div "/")
+  (defmathop2 madd "*" "+")
+  (defmathop2 msub "*" "-")
+  (defmathop2 addm "+" "*")
+  (defmathop2 subm "-" "*")
+#+END_SRC
+
+*** Higher level forms
+#+BEGIN_SRC clojure :noweb-ref math-ops
+  (defmacro maddsub
+    "Like madd, but the last 1 or 2 args are subtracted as product.
+    E.g. (maddsub a b c d e f) = (- (+ (* a b) (* c d)) (* e f)).
+    Only arities 5-8 are supported."
+    ([a b c d e]
+       `(- (madd ~a ~b ~c ~d) ~e))
+    ([a b c d e f]
+       `(- (madd ~a ~b ~c ~d) (* ~e ~f)))
+    ([a b c d e f g]
+       `(- (madd ~a ~b ~c ~d ~e ~f) ~g))
+    ([a b c d e f g h]
+       `(- (madd ~a ~b ~c ~d ~e ~f) (* ~g ~h))))
+  
+  (defmacro msubadd
+    "Like msub, but the last 1 or 2 args are added as product.
+    E.g. (msubadd a b c d e f) = (+ (- (* a b) (* c d)) (* e f))
+    Only arities 5-8 are supported."
+    ([a b c d e]
+       `(+ (msub ~a ~b ~c ~d) ~e))
+    ([a b c d e f]
+       `(+ (msub ~a ~b ~c ~d) (* ~e ~f)))
+    ([a b c d e f g]
+       `(+ (msub ~a ~b ~c ~d ~e ~f) ~g))
+    ([a b c d e f g h]
+       `(+ (msub ~a ~b ~c ~d ~e ~f) (* ~g ~h))))
+#+END_SRC
+
+*** Tangle for CLJ & CLJS                                          :noexport:
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core.clj :noweb yes
+  <<math-ops>>
+#+END_SRC
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core_cljs.clj :noweb yes
+  <<math-ops>>
+#+END_SRC
+
+* Tests
+** thi.ng.macromath.test.core
+*** Namespace declaration
+#+BEGIN_SRC clojure :tangle babel/test/cljx/thi/ng/macromath/test/core.cljx :mkdirp yes :padline no
+  (ns thi.ng.macromath.test.core
+    (:require
+     ,#+clj  [clojure.test :refer :all]
+     ,#+cljs [cemerick.cljs.test :as t]
+     ,#+clj  [thi.ng.macromath.core :as m])
+    ,#+cljs
+    (:require-macros
+     [cemerick.cljs.test :refer [is deftest]]
+     [thi.ng.macromath.core-cljs :as m]))
+#+END_SRC
+*** Main tests
+#+BEGIN_SRC clojure :tangle babel/test/cljx/thi/ng/macromath/test/core.cljx
+  (deftest test-add
+    (is (== 5 (m/add 2.0 3.0)))
+    (is (== 9 (m/add 2.0 3.0 4.0)))
+    (is (== 14 (m/add 2.0 3.0 4.0 5.0)))
+    (is (== 20 (m/add 2.0 3.0 4.0 5.0 6.0)))
+    (is (== 27 (m/add 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== 35 (m/add 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 44 (m/add 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-sub
+    (is (== -1 (m/sub 2.0 3.0)))
+    (is (== -5 (m/sub 2.0 3.0 4.0)))
+    (is (== -10 (m/sub 2.0 3.0 4.0 5.0)))
+    (is (== -16 (m/sub 2.0 3.0 4.0 5.0 6.0)))
+    (is (== -23 (m/sub 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== -31 (m/sub 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== -40 (m/sub 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-mul
+    (is (== 6 (m/mul 2.0 3.0)))
+    (is (== 24 (m/mul 2.0 3.0 4.0)))
+    (is (== 120 (m/mul 2.0 3.0 4.0 5.0)))
+    (is (== 720 (m/mul 2.0 3.0 4.0 5.0 6.0)))
+    (is (== 5040 (m/mul 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== 40320 (m/mul 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 362880 (m/mul 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-div
+    (is (== (/ 2.0 3.0) (m/div 2.0 3.0)))
+    (is (== (/ 2.0 3.0 4.0) (m/div 2.0 3.0 4.0)))
+    (is (== (/ 2.0 3.0 4.0 5.0) (m/div 2.0 3.0 4.0 5.0)))
+    (is (== (/ 2.0 3.0 4.0 5.0 6.0) (m/div 2.0 3.0 4.0 5.0 6.0)))
+    (is (== (/ 2.0 3.0 4.0 5.0 6.0 7.0) (m/div 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== (/ 2.0 3.0 4.0 5.0 6.0 7.0 8.0) (m/div 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== (/ 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0) (m/div 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-madd
+    (is (== 10 (m/madd 2.0 3.0 4.0)))
+    (is (== 26 (m/madd 2.0 3.0 4.0 5.0)))
+    (is (== 32 (m/madd 2.0 3.0 4.0 5.0 6.0)))
+    (is (== 68 (m/madd 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== 76 (m/madd 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 140 (m/madd 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-msub
+    (is (== 2 (m/msub 2.0 3.0 4.0)))
+    (is (== -14 (m/msub 2.0 3.0 4.0 5.0)))
+    (is (== -20 (m/msub 2.0 3.0 4.0 5.0 6.0)))
+    (is (== -56 (m/msub 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== -64 (m/msub 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== -128 (m/msub 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-addm
+    (is (== 20 (m/addm 2.0 3.0 4.0)))
+    (is (== 45 (m/addm 2.0 3.0 4.0 5.0)))
+    (is (== 270 (m/addm 2.0 3.0 4.0 5.0 6.0)))
+    (is (== 585 (m/addm 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== 4680 (m/addm 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 9945 (m/addm 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-subm
+    (is (== -4 (m/subm 2.0 3.0 4.0)))
+    (is (== 1 (m/subm 2.0 3.0 4.0 5.0)))
+    (is (== 6 (m/subm 2.0 3.0 4.0 5.0 6.0)))
+    (is (== -1 (m/subm 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== -8 (m/subm 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 1 (m/subm 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-maddsub
+    (is (== 20 (m/maddsub 2.0 3.0 4.0 5.0 6.0)))
+    (is (== -16 (m/maddsub 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== 60 (m/maddsub 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== -4 (m/maddsub 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+  
+  (deftest test-msubadd
+    (is (== -8 (m/msubadd 2.0 3.0 4.0 5.0 6.0)))
+    (is (== 28 (m/msubadd 2.0 3.0 4.0 5.0 6.0 7.0)))
+    (is (== -48 (m/msubadd 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
+    (is (== 16 (m/msubadd 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+#+END_SRC
