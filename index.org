@@ -83,11 +83,10 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 
 ** Release history
 
-   | *Version* | *Released* | *Description*                        | *Tagged Github URL*                  |
-   |-----------+------------+--------------------------------------+--------------------------------------|
-   |     0.2.0 | 2014-02-27 | Removed need for special CLJS macros | https://github.com/thi-ng/macromath/ |
-   |           |            | and adding more operations           |                                      |
-   |     0.1.0 | 2014-02-25 | Initial release                      | https://github.com/thi-ng/macromath/ |
+   | *Version* | *Released* | *Description*                                                   | *Tagged Github URL* |
+   |-----------+------------+-----------------------------------------------------------------+---------------------|
+   |     0.2.0 | 2014-02-27 | Removed need for special CLJS macros and adding more operations | [[https://github.com/thi-ng/macromath/tree/0.2.0][0.2.0]]               |
+   |     0.1.0 | 2014-02-25 | Initial release                                                 | [[https://github.com/thi-ng/macromath/tree/0.1.0][0.1.0]]               |
 
 ** Leiningen coordinates
 #+BEGIN_SRC clojure :noweb yes :noweb-ref lein-coords
