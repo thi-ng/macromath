@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.2.0
+0.2.1-SNAPSHOT
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -296,7 +296,33 @@ especially useful (more legible and faster) for higher arities (up to 8):
   (defmathop3 msubadd `msub `+ `*)
   (defmathop3 submadd `subm `+ `*)
 #+END_SRC
-
+*** Binary operations
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core.clj
+  (defmacro if*
+    "Returns y if x > 0, else 0"
+    [pred x y] `(if (~pred ~x) ~y 0))
+  
+  (defmacro bitmask
+    "Constructs a bit mask from given values & predicate fn applied to
+    each. If pred returns truthy value the value's related bit is set.
+    Bit values start at 1 and double for successive args (max 8)."
+    ([pred a]
+       `(if* ~pred ~a 0x01))
+    ([pred a b]
+       `(bit-or (bitmask ~pred ~a) (if* ~pred ~b 0x02)))
+    ([pred a b c]
+       `(bit-or (bitmask ~pred ~a ~b) (if* ~pred ~c 0x04)))
+    ([pred a b c d]
+       `(bit-or (bitmask ~pred ~a ~b ~c) (if* ~pred ~d 0x08)))
+    ([pred a b c d e]
+       `(bit-or (bitmask ~pred ~a ~b ~c ~d) (if* ~pred ~e 0x10)))
+    ([pred a b c d e f]
+       `(bit-or (bitmask ~pred ~a ~b ~c ~d ~e) (if* ~pred ~f 0x20)))
+    ([pred a b c d e f g]
+       `(bit-or (bitmask ~pred ~a ~b ~c ~d ~e ~f) (if* ~pred ~g 0x40)))
+    ([pred a b c d e f g h]
+       `(bit-or (bitmask ~pred ~a ~b ~c ~d ~e ~f ~g) (if* ~pred ~h 0x80))))
+#+END_SRC
 * Tests
 ** thi.ng.macromath.test.core
 *** Namespace declaration
