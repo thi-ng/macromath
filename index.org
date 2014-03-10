@@ -85,6 +85,7 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 
    | *Version* | *Released* | *Description*                                                   | *Tagged Github URL* |
    |-----------+------------+-----------------------------------------------------------------+---------------------|
+   |     0.2.1 | 2014-03-10 | Added bitmask macro & tests                                     | [[https://github.com/thi-ng/macromath/tree/0.2.1][0.2.1]]               |
    |     0.2.0 | 2014-02-27 | Removed need for special CLJS macros and adding more operations | [[https://github.com/thi-ng/macromath/tree/0.2.0][0.2.0]]               |
    |     0.1.0 | 2014-02-25 | Initial release                                                 | [[https://github.com/thi-ng/macromath/tree/0.1.0][0.1.0]]               |
 
