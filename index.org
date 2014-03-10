@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.2.1-SNAPSHOT
+0.2.1
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -47,7 +47,7 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 *** Runtime
 **** [[https://github.com/clojure/clojure][Clojure]]
 #+BEGIN_SRC clojure :noweb-ref dep-clj
-[org.clojure/clojure "1.6.0-beta1"]
+[org.clojure/clojure "1.6.0-beta2"]
 #+END_SRC
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
@@ -337,7 +337,7 @@ especially useful (more legible and faster) for higher arities (up to 8):
      [cemerick.cljs.test :refer [is deftest]]
      [thi.ng.macromath.core :as m]))
 #+END_SRC
-*** Main tests
+*** Math ops
 #+BEGIN_SRC clojure :tangle babel/test/cljx/thi/ng/macromath/test/core.cljx
   (deftest test-add
     (is (== 5 (m/add 2.0 3.0)))
@@ -450,4 +450,18 @@ especially useful (more legible and faster) for higher arities (up to 8):
     (is (== 43 (m/submadd 2.0 3.0 4.0 5.0 6.0 7.0)))
     (is (== 7 (m/submadd 2.0 3.0 4.0 5.0 6.0 7.0 8.0)))
     (is (== 71 (m/submadd 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0))))
+#+END_SRC
+*** Binary ops
+#+BEGIN_SRC clojure :tangle babel/test/cljx/thi/ng/macromath/test/core.cljx
+  (deftest bitmask
+    (is (= 0x01 (m/bitmask pos? 1)))
+    (is (= 0x03 (m/bitmask pos? 1 1)))
+    (is (= 0x07 (m/bitmask pos? 1 1 1)))
+    (is (= 0x0f (m/bitmask pos? 1 1 1 1)))
+    (is (= 0x1f (m/bitmask pos? 1 1 1 1 1)))
+    (is (= 0x3f (m/bitmask pos? 1 1 1 1 1 1)))
+    (is (= 0x7f (m/bitmask pos? 1 1 1 1 1 1 1)))
+    (is (= 0xff (m/bitmask pos? 1 1 1 1 1 1 1 1)))
+    (is (= 0x55 (m/bitmask pos? 1 0 1 0 1 0 1 0)))
+    (is (= 0xaa (m/bitmask pos? 0 1 0 1 0 1 0 1))))
 #+END_SRC
