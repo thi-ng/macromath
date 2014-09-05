@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.2.2
+0.2.3
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -328,7 +328,7 @@ especially useful (more legible and faster) for higher arities (up to 8):
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core.clj
   (defmacro mix
     "Linear, bi-linear & tri-linear interpolation"
-    ([a b t] `(let [a# ~a] (m/madd (- ~b a#) ~t a#)))
+    ([a b t] `(let [a# ~a] (submadd ~b a# ~t a#)))
     ([a b c d u v] `(mix (mix ~a ~b ~u) (mix ~c ~d ~u) ~v))
     ([a b c d e f g h u v w] `(mix (mix ~a ~b ~c ~d ~u ~v) (mix ~e ~f ~g ~h ~u ~v) ~w)))
 #+END_SRC
