@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.2.1
+0.2.2
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -324,6 +324,15 @@ especially useful (more legible and faster) for higher arities (up to 8):
     ([pred a b c d e f g h]
        `(bit-or (bitmask ~pred ~a ~b ~c ~d ~e ~f ~g) (if* ~pred ~h 0x80))))
 #+END_SRC
+*** Interpolation
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/core.clj
+  (defmacro mix
+    "Linear, bi-linear & tri-linear interpolation"
+    ([a b t] `(let [a# ~a] (m/madd (- ~b a#) ~t a#)))
+    ([a b c d u v] `(mix (mix ~a ~b ~u) (mix ~c ~d ~u) ~v))
+    ([a b c d e f g h u v w] `(mix (mix ~a ~b ~c ~d ~u ~v) (mix ~e ~f ~g ~h ~u ~v) ~w)))
+#+END_SRC
+
 * Tests
 ** thi.ng.macromath.test.core
 *** Namespace declaration
@@ -465,4 +474,11 @@ especially useful (more legible and faster) for higher arities (up to 8):
     (is (= 0xff (m/bitmask pos? 1 1 1 1 1 1 1 1)))
     (is (= 0x55 (m/bitmask pos? 1 0 1 0 1 0 1 0)))
     (is (= 0xaa (m/bitmask pos? 0 1 0 1 0 1 0 1))))
+#+END_SRC
+*** Interpolation
+#+BEGIN_SRC clojure :tangle babel/test/cljx/thi/ng/macromath/test/core.cljx
+  (deftest mix
+    (is (= 0.5  (m/mix 0 1 0.5)))
+    (is (= 1.5  (m/mix 0 1 2 3 0.5 0.5)))
+    (is (= 3.5  (m/mix 0 1 2 3 4 5 6 7 0.5 0.5 0.5))))
 #+END_SRC
