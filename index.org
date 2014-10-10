@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.2.3
+0.3.0-SNAPSHOT
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -60,7 +60,7 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 #+END_SRC
 **** [[https://github.com/lynaghk/cljx][Cljx]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljx
-[com.keminglabs/cljx "0.3.2"]
+[org.clojars.cemerick/cljx "0.5.0-SNAPSHOT"]
 #+END_SRC
 **** [[https://github.com/hugoduncan/criterium][Criterium]]
 #+BEGIN_SRC clojure :noweb-ref dep-criterium
@@ -120,46 +120,53 @@ versions.
 ** Leiningen project file                                          :noexport:
 #+BEGIN_SRC clojure :tangle babel/project.clj :noweb yes :mkdirp yes :padline no
   (defproject thi.ng/macromath "<<version>>"
-    :description "Collection of common math macros to produce inline expanded, nested expressions."
-    :url "<<project-url>>"
-    :license {:name "Apache Software License 2.0"
-              :url "https://www.apache.org/licenses/LICENSE-2.0"}
-  
+    :description  "Collection of common math macros to produce inline expanded, nested expressions."
+    :url          "<<project-url>>"
+    :license      {:name "Apache Software License 2.0"
+                   :url "https://www.apache.org/licenses/LICENSE-2.0"
+                   :distribution :repo}
+    :scm          {:name "git"
+                   :url "git@github.com:thi-ng/macromath.git"}
+
+    :min-lein-vesion "2.4.0"
+
     :dependencies [<<dep-clj>>]
-  
+
     :source-paths ["src/cljx"]
-    :test-paths ["<<gen-test-path>>"]
-  
-    :profiles {:dev {:dependencies [<<dep-cljs>>
-                                    <<dep-criterium>>]
-                     :plugins [<<dep-cljx>>
-                               <<dep-cljsbuild>>
-                               <<dep-cljs-test>>
-                               <<dep-austin>>]
-                     :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]}}}
-  
-    :cljx {:builds [{:source-paths ["src/cljx"]
-                     :output-path "<<gen-source-path>>"
-                     :rules :clj}
-                    {:source-paths ["src/cljx"]
-                     :output-path "<<gen-source-path>>"
-                     :rules :cljs}
-                    {:source-paths ["test/cljx"]
-                     :output-path "<<gen-test-path>>"
-                     :rules :clj}
-                    {:source-paths ["test/cljx"]
-                     :output-path "<<gen-test-path>>"
-                     :rules :cljs}]}
-  
-    :cljsbuild {:builds [{:source-paths ["<<gen-source-path>>" "<<gen-test-path>>"]
-                          :id "simple"
-                          :compiler {:output-to "<<cljs-artefact-path>>"
-                                     :optimizations :whitespace
-                                     :pretty-print true}}]
-                :test-commands {"unit-tests" ["phantomjs" :runner "<<cljs-artefact-path>>"]}}
-  
-    :scm {:url "git@github.com:thi-ng/macromath.git"}
-    :pom-addition [:developers [:developer
+    :test-paths   ["<<gen-test-path>>"]
+
+    :profiles     {:dev {:dependencies [<<dep-cljs>>
+                                        <<dep-criterium>>]
+                         :plugins [<<dep-cljx>>
+                                   <<dep-cljsbuild>>
+                                   <<dep-cljs-test>>]
+                         :global-vars {*warn-on-reflection* true}
+                         :jvm-opts ^:replace []
+                         :auto-clean false
+                         :prep-tasks [["cljx" "once"] "javac" "compile"]
+                         :aliases {"cleantest" ["do" "clean" ["test" ":all"] ["cljsbuild" "test"]]}}}
+
+    :cljx         {:builds [{:source-paths ["src/cljx"]
+                             :output-path "<<gen-source-path>>"
+                             :rules :clj}
+                            {:source-paths ["src/cljx"]
+                             :output-path "<<gen-source-path>>"
+                             :rules :cljs}
+                            {:source-paths ["test/cljx"]
+                             :output-path "<<gen-test-path>>"
+                             :rules :clj}
+                            {:source-paths ["test/cljx"]
+                             :output-path "<<gen-test-path>>"
+                             :rules :cljs}]}
+
+    :cljsbuild    {:builds [{:source-paths ["<<gen-source-path>>" "<<gen-test-path>>"]
+                             :id "simple"
+                             :compiler {:output-to "<<cljs-artefact-path>>"
+                                        :optimizations :whitespace
+                                        :pretty-print true}}]
+                   :test-commands {"unit-tests" ["phantomjs" :runner "<<cljs-artefact-path>>"]}}
+
+    :pom-addition [:developers [:developer {:id "toxi"}
                                 [:name "Karsten Schmidt"]
                                 [:url "http://thi.ng"]
                                 [:timezone "0"]]])
@@ -179,7 +186,7 @@ single symbol =version= holding the version string defined above:
 *** Version namespace                                              :noexport:
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/version.cljx :noweb yes :mkdirp yes :padline no :exports none
   (ns thi.ng.macromath.version)
-  (def ^:const version "<<version>>")
+  (def version "<<version>>")
 #+END_SRC
 
 * Modules
