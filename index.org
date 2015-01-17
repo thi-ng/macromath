@@ -139,8 +139,8 @@ versions.
                          :global-vars {*warn-on-reflection* true}
                          :jvm-opts ^:replace []
                          :auto-clean false
-			 :prep-tasks [["cljx" "once"]]
-			 :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]}}}
+                         :prep-tasks [["cljx" "once"]]
+                         :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]}}}
 
     :cljx         {:builds [{:source-paths ["src/cljx"]
                              :output-path "<<gen-source-path>>"
