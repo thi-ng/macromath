@@ -13,18 +13,23 @@
 
 * About the project
 ** Injected properties
-#+BEGIN_SRC clojure :exports none :noweb-ref version
+
+#+BEGIN_SRC clojure :noweb-ref version
 0.3.0
 #+END_SRC
+
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
 #+END_SRC
+
 #+BEGIN_SRC clojure :exports none :noweb-ref gen-source-path
 target/classes
 #+END_SRC
+
 #+BEGIN_SRC clojure :exports none :noweb-ref gen-test-path
 target/test-classes
 #+END_SRC
+
 #+BEGIN_SRC clojure :exports none :noweb yes :noweb-ref cljs-artefact-path
 target/macromath-<<version>>.js
 #+END_SRC
