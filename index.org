@@ -14,7 +14,7 @@
 * About the project
 ** Injected properties
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.3.0-SNAPSHOT
+0.3.0
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 https://github.com/thi-ng/macromath
@@ -73,17 +73,18 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 
 ** Contributors
 
-   | *Name*          | *Role*                          | *Website*                  |
-   |-----------------+---------------------------------+----------------------------|
-   | Karsten Schmidt | initiator & principal developer | http://postspectacular.com |
+| *Name*          | *Role*                          | *Website*                  |
+|-----------------+---------------------------------+----------------------------|
+| Karsten Schmidt | initiator & principal developer | http://postspectacular.com |
 
 ** Release history
 
-   | *Version* | *Released* | *Description*                                                   | *Tagged Github URL* |
-   |-----------+------------+-----------------------------------------------------------------+---------------------|
-   |     0.2.1 | 2014-03-10 | Added bitmask macro & tests                                     | [[https://github.com/thi-ng/macromath/tree/0.2.1][0.2.1]]               |
-   |     0.2.0 | 2014-02-27 | Removed need for special CLJS macros and adding more operations | [[https://github.com/thi-ng/macromath/tree/0.2.0][0.2.0]]               |
-   |     0.1.0 | 2014-02-25 | Initial release                                                 | [[https://github.com/thi-ng/macromath/tree/0.1.0][0.1.0]]               |
+| *Version* | *Released* | *Description*                                                   | *Tagged Github URL* |
+|-----------+------------+-----------------------------------------------------------------+---------------------|
+|     0.3.0 | 2015-01-19 | Added interpolation & min/max ops                               | [[https://github.com/thi-ng/macromath/tree/0.3.0][0.3.0]]               |
+|     0.2.1 | 2014-03-10 | Added bitmask macro & tests                                     | [[https://github.com/thi-ng/macromath/tree/0.2.1][0.2.1]]               |
+|     0.2.0 | 2014-02-27 | Removed need for special CLJS macros and adding more operations | [[https://github.com/thi-ng/macromath/tree/0.2.0][0.2.0]]               |
+|     0.1.0 | 2014-02-25 | Initial release                                                 | [[https://github.com/thi-ng/macromath/tree/0.1.0][0.1.0]]               |
 
 ** Leiningen coordinates
 #+BEGIN_SRC clojure :noweb yes :noweb-ref lein-coords
@@ -179,13 +180,16 @@ single symbol =version= holding the version string defined above:
   (prn version)
   ; "<<version>>"
 #+END_SRC
+
 *** Version namespace                                              :noexport:
+
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/macromath/version.cljx :noweb yes :mkdirp yes :padline no :exports none
   (ns thi.ng.macromath.version)
   (def version "<<version>>")
 #+END_SRC
 
 * Modules
+
 ** thi.ng.macromath.core
 
 This library only contains this single name space. Though because the
